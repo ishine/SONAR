@@ -2,7 +2,7 @@
 [[Paper]](https://ai.meta.com/research/publications/sonar-sentence-level-multimodal-and-language-agnostic-representations/)
 [[Demo]](#usage)
 
-We introduce SONAR, a new multilingual and multimodal fixed-size sentence embedding space, with a full suite of speech and text encoders and decoders. It substantially outperforms existing sentence embeddings such as LASER3 and LabSE on the xsim and xsim++ multilingual similarity search tasks. 
+We introduce SONAR, a new multilingual and multimodal fixed-size sentence embedding space, with a full suite of speech and text encoders and decoders. It substantially outperforms existing sentence embeddings such as LASER3 and LabSE on the xsim and xsim++ multilingual similarity search tasks.
 
 Speech segments can be embedded in the same SONAR embedding space using language-specific speech encoders trained in a teacher-student setting on speech transcription data. We also provide a single text decoder, which allows us to perform text-to-text and speech-to-text machine translation, including for zero-shot language and modality combinations.
 
@@ -37,7 +37,7 @@ pip install fairseq2 --extra-index-url https://fair.pkg.atmeta.com/fairseq2/whl/
 ```
 If [fairseq2](https://github.com/facebookresearch/fairseq2) does not provide a build for your machine, check the readme of that project to build it locally.
 
-We recommend installing SONAR only after you have a correct version of `fairseq2` installed.  Note that SONAR currently relies on the stable version of fairseq2 0.4.5 (with minor variations possible).
+We recommend installing SONAR only after you have a correct version of `fairseq2` installed.  Note that SONAR currently relies on the stable version of `fairseq2>=0.5.2` (with minor variations possible).
 
 If you want to install SONAR manually, you can install it localy:
 
@@ -45,6 +45,14 @@ If you want to install SONAR manually, you can install it localy:
 pip install --upgrade pip
 pip install -e .
 ```
+
+### Versions
+Unfortunately, SONAR code is very much tied to fairseq2 code, and thus only specific version are compatible with each other:
+- `sonar-space~=0.5.0` (the current version) requires `fairseq2>=0.5.2`
+- `sonar-space~=0.4.0` required `fairseq2~=0.4.0`
+- `sonar-space~=0.2.0` required `fairseq2~=0.2.0`
+
+In the future, when the `fairseq2` interface stabilizes, we hope to keep the version dependencies less loosely coupled. 
 
 
 ## Usage
@@ -150,7 +158,7 @@ assert sr == 16000, "Sample rate should be 16kHz"
 s2t_model.predict([inp], target_lang="eng_Latn")
 # ['Television reports show white smoke coming from the plant.']
 
-# passing multiple wav files 
+# passing multiple wav files
 s2t_model.predict(["./tests/integration_tests/data/audio_files/audio_1.wav",
                    "./tests/integration_tests/data/audio_files/audio_2.wav"], target_lang="eng_Latn")
 # ['Television reports show white smoke coming from the plant.',
@@ -161,8 +169,8 @@ s2t_model.predict(["./tests/integration_tests/data/audio_files/audio_1.wav",
 ### Predicting sentence similarity with BLASER 2.0 models
 
 BLASER 2.0 is a family of models for automatic evaluation of machine translation quality based on SONAR embeddings.
-They predict [cross-lingual semantic similarity](https://github.com/facebookresearch/fairseq/tree/nllb/examples/nllb/human_XSTS_eval) 
-between the translation and the source (optionally, also using a reference translation). 
+They predict [cross-lingual semantic similarity](https://github.com/facebookresearch/fairseq/tree/nllb/examples/nllb/human_XSTS_eval)
+between the translation and the source (optionally, also using a reference translation).
 
 ```Python
 from sonar.inference_pipelines.text import TextToEmbeddingModelPipeline
@@ -182,7 +190,7 @@ with torch.inference_mode():
 ```
 
 Detailed model cards with more examples: [facebook/blaser-2.0-ref](https://huggingface.co/facebook/blaser-2.0-ref), 
-[facebook/blaser-2.0-qe](https://huggingface.co/facebook/blaser-2.0-qe). 
+[facebook/blaser-2.0-qe](https://huggingface.co/facebook/blaser-2.0-qe).
 
 ### Classifying the toxicity of sentences with MuTox
 
@@ -236,6 +244,10 @@ See more complete demo notebooks :
 * [sonar text2text similarity and translation](examples/sonar_text_demo.ipynb)
 * [sonar speech2text and other data pipeline examples](examples/inference_pipelines.ipynb)
 * [sonar bilingual document alignment with sonar text similarity](examples/bilingual_document.ipynb)
+
+### Troubleshooting
+
+- In case of errors like `fairseq2.assets.card.AssetCardError: Model checkpoint of the blaser_2_0_qe asset card cannot be loaded`, try removing the fairseq2 assets cache (located in `~/.cache/fairseq2`); it might be that some of the downloaded model checkpoints are invalid.
 
 
 ## Supported languages and download links
@@ -554,6 +566,6 @@ See the [CONTRIBUTING](CONTRIBUTING.md) file for how to help out.
 
 SONAR code is released under the MIT license (see [CODE_LICENSE](CODE_LICENSE.md)).
 
-Some of SONAR models are released with the same MIT license, BUT BEWARE, 
+Some of SONAR models are released with the same MIT license, BUT BEWARE,
 some of them are released under a non commercial license (see [NC_MODEL_LICENSE](NC_MODEL_LICENSE.md)).
 Please refer to [LICENSE](LICENSE.md) for the details.
